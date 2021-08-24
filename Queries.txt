@@ -1,0 +1,247 @@
+                               SQL Bolt Query
+
+Lesson 1
+
+Ques. Find the title of each film .
+Ans:  SELECT title FROM movies;
+
+Ques: Find the director of each film 
+Ans:  SELECT director FROM movies;
+
+Ques:  Find the title and director of each film 
+Ans:   SELECT title,director FROM movies;
+
+Ques:  Find the title and year of each film 
+Ans:  SELECT title,year FROM movies;
+
+Ques: Find all the information about each film 
+Ans:  SELECT * FROM movies;
+
+Lesson 2
+
+Ques:  Find the movie with a row id of 6 
+Ans:  SELECT * FROM movies where id=6;
+
+Ques:  Find the movies released in the years between 2000 and 2010 
+Ans:   SELECT * FROM movies where year between 2000 and 2010;
+
+Ques:  Find the movies not released in the years between 2000 and 2010 
+Ans:   SELECT * FROM movies where year not between 2000 and 2010;
+
+Ques:  Find the first 5 Pixar movies and their release year
+Ans:   SELECT * FROM movies where id  in (1,2,3,4,5);
+
+
+Lesson 3
+
+Ques:  Find all the Toy Story movies
+Ans:   SELECT title, director FROM movies 
+       WHERE title LIKE "Toy Story%";
+
+Ques:  Find all the movies directed by John Lasseter
+Ans:   SELECT title, director FROM movies 
+       WHERE director LIKE "John Lasseter";
+
+Ques:  Find all the movies (and director) not directed by John Lasseter 
+Ans:  SELECT title, director FROM movies 
+      WHERE director not in ("John Lasseter");
+
+Ques:  Find all the WALL-* movies 
+Ans:  SELECT * FROM movies 
+      WHERE title like("Wall%");
+
+
+Lesson 4
+
+Ques: List all directors of Pixar movies (alphabetically), without duplicates 
+Ans:  SELECT distinct director FROM movies order by director asc;
+
+Ques:  List the last four Pixar movies released (ordered from most recent to least) 
+Ans:  SELECT title, year FROM movies
+      ORDER BY year DESC
+      LIMIT 4;
+
+Ques: List the first five Pixar movies sorted alphabetically 
+Ans:  SELECT title, year FROM movies
+      ORDER BY title asc
+      LIMIT 5; 
+
+Ques:  List the next five Pixar movies sorted alphabetically 
+Ans:  SELECT title FROM movies
+      ORDER BY title ASC
+      LIMIT 5 OFFSET 5;
+
+Simple Query:  
+
+Ques:  List all the Canadian cities and their populations 
+Ans:  SELECT * FROM north_american_cities where country ="Canada";
+
+Ques:  Order all the cities in the United States by their latitude from north to south 
+Ans:  SELECT city, latitude FROM north_american_cities
+      where country = "United States"
+      order by latitude desc;
+
+Ques:  List all the cities west of Chicago, ordered from west to east 
+Ans:  SELECT * FROM north_american_cities
+      where  longitude <
+      (select longitude from north_american_cities where city="Chicago") 
+      order by longitude;
+
+Ques:  List the two largest cities in Mexico (by population) 
+Ans:  SELECT * FROM north_american_cities
+      where Country = "Mexico"
+      order by population desc limit 2;
+
+Ques:  List the third and fourth largest cities (by population) in the United States and their population 
+Ans:  SELECT * FROM north_american_cities
+      where Country = "United States"
+      order by population desc limit 2 offset 2
+
+Lesson 6 
+
+Ques:  Find the domestic and international sales for each movie 
+Ans:   SELECT * FROM movies inner join boxoffice  on id = Movie_id;
+
+Ques:  Show the sales numbers for each movie that did better internationally rather than domestically.
+Ans:   SELECT * FROM movies inner join boxoffice  on id = Movie_id
+       where International_sales > Domestic_sales;
+
+Ques: List all the movies by their ratings in descending order
+Ans:  SELECT * FROM movies inner join boxoffice  on id = Movie_id
+      order by rating desc
+
+Lesson 7
+
+Ques: Find the list of all buildings that have employees 
+Ans:   SELECT distinct building FROM employees;
+
+Ques:   Find the list of all buildings and their capacity
+Ans:   SELECT * FROM buildings;
+
+Ques:  List all buildings and the distinct employee roles in each building (including empty buildings)
+Ans:  SELECT distinct role, building_name FROM buildings 
+      left join employees
+      on building_name = building;
+
+Lesson 8
+
+Ques: Find the name and role of all employees who have not been assigned to a building
+Ans:  SELECT name, role FROM employees where building is null;
+
+Ques: Find the names of the buildings that hold no employees
+Ans:  SELECT distinct building_name FROM buildings left join employees
+      on building_name = building where role is null;
+
+Lesson 9
+
+Ques:   List all movies and their combined sales in millions of dollars
+Ans:   SELECT *,(Domestic_sales + International_sales)/1000000 as    Overall_Collection        
+      FROM movies inner join boxoffice on id = movie_id ;
+
+Ques:  List all movies and their ratings in percent
+Ans:  SELECT *, rating*10 FROM movies inner join boxoffice on id = movie_id;
+
+Ques:  List all movies that were released on even number years
+Ans:   SELECT * FROM movies where year%2 = 0;
+
+Lesson 10
+
+Ques:  Find the longest time that an employee has been at the studio
+Ans:  SELECT max(years_employed) as Max_Years_Employed
+      FROM employees;
+
+Ques: For each role, find the average number of years employed by employees in that role
+Ans:  SELECT role, avg(years_employed) as Average_Years_Employed
+      FROM employees
+      group by role;
+
+Ques:  Find the total number of employee years worked in each building
+Ans:  SELECT building, sum(years_employed) as Total_Years_Employed
+      FROM employees
+      group by building;
+
+
+Lesson 11
+
+Ques:  Find the number of Artists in the studio (without a HAVING clause)
+Ans:   SELECT role, count(*) as Number_of_artists
+       FROM employees
+       where role = "Artist";
+
+Ques:  Find the number of Employees of each role in the studio
+Ans:  SELECT role, count(*) as Number_of_artists
+      FROM employees
+      group by role;
+
+Ques:  Find the total number of years employed by all Engineers
+Ans:  SELECT role, sum(years_employed) FROM employees group by role having role =   "Engineer";
+
+Lesson 12
+
+Ques:  Find the number of movies each director has directed
+Ans:  SELECT director, count(id) as Number_of_Movies_Directed FROM movies
+      group by director;
+
+Ques:  Find the total domestic and international sales that can be attributed to each director
+Ans:  SELECT director, SUM(domestic_sales + international_sales) as Total_Sales FROM  movies inner join boxoffice
+     on movies.id = boxoffice.movie_id group by director;
+
+
+Lesson 13
+
+Ques: Add the studio's new production, Toy Story 4 to the list of movies (you can use any director)
+Ans: INSERT into movies values (4, "Toy Story 4", "Trinket", 2021, 113);
+
+
+Ques:  Toy Story 4 has been released to critical acclaim! It had a rating of 8.7, and made 340 million domestically and 270 million internationally. Add the record to the BoxOffice table.
+Ans:   INSERT into boxoffice values (4, 8.7, 340000000, 270000000);
+
+
+Lesson 14
+
+Ques:  The director for A Bug's Life is incorrect, it was actually directed by John Lasseter
+Ans:  UPDATE movies set director = "John Lasseter" where id = 2;
+
+Ques: The year that Toy Story 2 was released is incorrect, it was actually released in 1999
+Ans:  UPDATE movies set year = 1999 where id = 3;
+
+Ques:   Both the title and director for Toy Story 8 is incorrect! The title should be "Toy Story 3" and it was directed by Lee Unkrich
+Ans:   UPDATE movies set title = "Toy Story 3", director = "Lee Unkrich"
+where id = 11;
+
+
+Lesson 15
+
+Ques:  This database is getting too big, lets remove all movies that were released before 2005.
+Ans:  DELETE FROM movies where year < 2005;
+
+Ques:  Andrew Stanton has also left the studio, so please remove all movies directed by him.
+Ans:  DELETE FROM movies where director = "Andrew Stanton";
+
+
+Lesson 16
+
+Ques: Create a new table named Database with the following columns:
+– Name A string (text) describing the name of the database – Version A number (floating point) of the latest version of this database – Download_count An integer count of the number of times this database was downloaded
+This table has no constraints.
+
+Ans:  CREATE TABLE Database(Name text, Version float, Download_count integer
+);
+
+
+Lesson 17
+
+Ques:  Add a column named Aspect_ratio with a FLOAT data type to store the aspect-ratio each movie was released in.
+Ans:  
+
+Ques: Add another column named Language with a TEXT data type to store the language that the movie was released in. Ensure that the default for this language is English.
+Ans:  ALTER TABLE Movies ADD COLUMN Language TEXT DEFAULT "English";
+
+
+Lesson 18
+
+Ques:  We've sadly reached the end of our lessons, lets clean up by removing the Movies table
+Ans:  drop table if exists movies;
+
+Ques:  And drop the BoxOffice table as well 
+Ans:  drop table if exists boxoffice;
